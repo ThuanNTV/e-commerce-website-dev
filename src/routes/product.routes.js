@@ -7,8 +7,20 @@ router.get('/', productController.getAllProducts);
 router.post(
   '/',
   authenticate,
-  authorize(['admin']),
+  authorize(['admin', 'staff']),
   productController.createProduct,
+);
+router.put(
+  '/:id',
+  authenticate,
+  authorize(['admin', 'staff']),
+  productController.updateProduct,
+);
+router.delete(
+  '/:id',
+  authenticate,
+  authorize(['admin']),
+  productController.deleteProduct,
 );
 
 module.exports = router;

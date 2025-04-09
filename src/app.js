@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const specs = require('./swagger');
 const authRoutes = require('./routes/auth.routes');
 const productRoutes = require('./routes/product.routes');
 const { sequelize } = require('./models');
@@ -10,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 
