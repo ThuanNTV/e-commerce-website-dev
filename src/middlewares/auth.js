@@ -2,29 +2,25 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
 const authenticate = async (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ error: 'Access denied' });
+
   try {
-    const token = req.header('Authorization').replace('Bearer ', '');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findByPk(decoded.id);
-
     if (!user) throw new Error();
     req.user = user;
     next();
-  } catch (_err) {
-    res.status(401).send({ error: 'Vui lòng xác thực' });
+  } catch (err) {
+    res.status(401).json({ error: 'Invalid token' });
   }
 };
 
-const authorize = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        success: false,
-        error: 'Không có quyền truy cập',
-      });
-    }
-    next();
-  };
+const authorize = (roles) => (req, res, next) => {
+  if (!roles.includes(req.user.role)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  next();
 };
 
 module.exports = { authenticate, authorize };

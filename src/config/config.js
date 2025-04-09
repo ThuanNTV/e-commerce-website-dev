@@ -1,16 +1,20 @@
 require('dotenv').config();
 
 module.exports = {
-  database: {
+  development: {
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    name: process.env.DB_NAME,
     dialect: 'mysql',
+    logging: console.log,
   },
-  jwt: {
-    secret: process.env.JWT_SECRET,
-    expiresIn: process.env.JWT_EXPIRES_IN || '8h',
+  // Thêm các môi trường khác nếu cần
+  test: {
+    // ...
+  },
+  production: {
+    // ...
   },
 };

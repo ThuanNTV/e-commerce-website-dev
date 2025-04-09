@@ -1,30 +1,29 @@
-const Sequelize = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 const config = require('../config/config');
 
 const env = process.env.NODE_ENV || 'development';
-const dbConfig = config.database[env];
+const dbConfig = config[env];
 
 const sequelize = new Sequelize(
-  dbConfig.name,
-  dbConfig.user,
+  dbConfig.database,
+  dbConfig.username,
   dbConfig.password,
   {
     host: dbConfig.host,
     port: dbConfig.port,
     dialect: dbConfig.dialect,
-    logging: console.log,
-  }
+    logging: dbConfig.logging,
+  },
 );
 
 const models = {
-  User: require('./user.model')(sequelize, Sequelize),
-  Product: require('./product.model')(sequelize, Sequelize),
-  Customer: require('./customer.model')(sequelize, Sequelize),
-  Order: require('./order.model')(sequelize, Sequelize),
-  OrderItem: require('./orderitem.model')(sequelize, Sequelize),
+  User: require('./user.model')(sequelize, DataTypes),
+  Product: require('./product.model')(sequelize, DataTypes),
+  Customer: require('./customer.model')(sequelize, DataTypes),
+  Order: require('./order.model')(sequelize, DataTypes),
+  OrderItem: require('./orderitem.model')(sequelize, DataTypes),
 };
 
-// Thiết lập quan hệ
 Object.values(models).forEach((model) => {
   if (model.associate) model.associate(models);
 });
@@ -32,4 +31,5 @@ Object.values(models).forEach((model) => {
 module.exports = {
   ...models,
   sequelize,
+  Sequelize,
 };
