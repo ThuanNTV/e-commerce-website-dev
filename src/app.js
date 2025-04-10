@@ -2,13 +2,28 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
-const sequelize = require('./database');
-const specs = require('./config/swagger');
+const swaggerJsdoc = require('swagger-jsdoc');
+const sequelize = require('./config/database');
 const authRoutes = require('./routes/auth.routes');
 const productRoutes = require('./routes/product.routes');
-const logger = require('./config/logger'); // Import logger
+const logger = require('./utils/logger'); // Import logger
 
 const app = express();
+
+// Cấu hình Swagger
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'API Documentation',
+      version: '1.0.0',
+      description: 'API Documentation with Swagger',
+    },
+  },
+  apis: ['./routes/*.js'],
+};
+
+const specs = swaggerJsdoc(options);
 
 // Tích hợp Morgan với Winston
 app.use(

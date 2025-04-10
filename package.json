@@ -16,7 +16,6 @@
     "morgan": "^1.10.0",
     "mysql2": "^3.6.2",
     "sequelize": "^6.35.0",
-    "swagger": "^0.0.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "winston": "^3.17.0"
