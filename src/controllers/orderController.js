@@ -54,6 +54,7 @@ const getAllOrders = async (req, res) => {
     }
 
     const { count, rows: orders } = await Order.findAndCountAll(options);
+    logger.info(`Retrieved ${orders.length} orders successfully`);
 
     successResponse(res, {
       orders,
@@ -65,6 +66,7 @@ const getAllOrders = async (req, res) => {
       },
     });
   } catch (error) {
+    logger.error(`Get all orders error: ${error.stack}`);
     errorResponse(res, error.message, 500);
   }
 };
