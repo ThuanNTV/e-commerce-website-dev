@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     address: DataTypes.TEXT,
+    description: { type: DataTypes.TEXT, allowNull: true },
   });
 
   Customer.associate = (models) => {

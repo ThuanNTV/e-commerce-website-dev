@@ -8,7 +8,7 @@ const register = async (req, res) => {
     // Không hash ở đây, để cho hook beforeCreate làm
     const user = await User.create({ email, password, role });
     successResponse(res, { id: user.id, email: user.email }, 201);
-  } catch (_error) {
+  } catch (error) {
     errorResponse(res, error.message, 400);
   }
 };
@@ -31,10 +31,27 @@ const login = async (req, res) => {
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
-    res.json({ token });
+    successResponse(res, token, 200);
   } catch (_error) {
     errorResponse(res, 'Internal server error', 500);
   }
 };
 
-module.exports = { register, login };
+const getprofile = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+    if (!user) {
+      return errorResponse(res, 'User not found', 404);
+    }
+    successResponse(res, user, 200);
+  } catch (_error) {
+    errorResponse(res, 'Internal server error', 500);
+  }
+};
+
+const logout = (req, res) => {
+  // Xóa token hoặc thực hiện các hành động khác để đăng xuất
+  successResponse(res, 'Logged out successfully', 200);
+};
+
+module.exports = { register, login, getprofile, logout };

@@ -13,8 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM('admin', 'staff'),
-      defaultValue: 'staff',
+      type: DataTypes.ENUM('admin', 'staff', 'customer'),
+      defaultValue: 'customer',
     },
   });
 
@@ -23,7 +23,6 @@ module.exports = (sequelize, DataTypes) => {
       const salt = await bcrypt.genSalt(10);
       const hash = await bcrypt.hash(user.password, salt);
       user.password = hash;
-      console.log('[DEBUG] Generated hash:', hash); // Log hash
     } catch (error) {
       throw new Error('Hashing failed: ' + error.message);
     }
