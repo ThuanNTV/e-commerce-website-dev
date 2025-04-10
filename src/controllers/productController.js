@@ -1,4 +1,5 @@
 const { Product } = require('../models');
+const { successResponse, errorResponse } = require('../utils/response');
 
 const getAllProducts = async (req, res) => {
   try {
@@ -37,7 +38,7 @@ const getAllProducts = async (req, res) => {
     // Thực hiện truy vấn với phân trang
     const { count, rows: products } = await Product.findAndCountAll(options);
 
-    res.json({
+    successResponse(res, {
       products,
       pagination: {
         totalItems: count,
@@ -47,7 +48,7 @@ const getAllProducts = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    errorResponse(res, error.message, 500);
   }
 };
 
@@ -57,12 +58,12 @@ const getProductById = async (req, res) => {
     const product = await Product.findByPk(id);
 
     if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
+      return errorResponse(res, 'Product not found', 404);
     }
 
-    res.json(product);
+    successResponse(res, product);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    errorResponse(res, error.message, 500);
   }
 };
 
@@ -85,7 +86,7 @@ const createProduct = async (req, res) => {
 
     // Kiểm tra trường bắt buộc
     if (!name || !price) {
-      return res.status(400).json({ error: 'Name and price are required' });
+      return errorResponse(res, 'Name and price are required', 400);
     }
 
     const product = await Product.create({
@@ -103,9 +104,9 @@ const createProduct = async (req, res) => {
       featured,
     });
 
-    res.status(201).json(product);
+    successResponse(res, product, 201);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    errorResponse(res, error.message, 400);
   }
 };
 
@@ -130,7 +131,7 @@ const updateProduct = async (req, res) => {
     const product = await Product.findByPk(id);
 
     if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
+      return errorResponse(res, 'Product not found', 404);
     }
 
     await product.update({
@@ -148,9 +149,9 @@ const updateProduct = async (req, res) => {
       featured,
     });
 
-    res.json(product);
+    successResponse(res, product);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    errorResponse(res, error.message, 400);
   }
 };
 
@@ -161,14 +162,15 @@ const deleteProduct = async (req, res) => {
     const product = await Product.findByPk(id);
 
     if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
+      return errorResponse(res, 'Product not found', 404);
     }
 
     await product.destroy();
 
     res.status(204).send();
+    successResponse(res, 'Delete success!', 204);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    errorResponse(res, error.message, 500);
   }
 };
 
@@ -177,7 +179,7 @@ const searchProducts = async (req, res) => {
     const { query, limit = 10, page = 1 } = req.query;
 
     if (!query) {
-      return res.status(400).json({ error: 'Search query is required' });
+      return errorResponse(res, 'Search query is required', 400);
     }
 
     const { Op } = require('sequelize');
@@ -196,8 +198,7 @@ const searchProducts = async (req, res) => {
     };
 
     const { count, rows: products } = await Product.findAndCountAll(options);
-
-    res.json({
+    successResponse(res, {
       products,
       pagination: {
         totalItems: count,
@@ -207,7 +208,7 @@ const searchProducts = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    errorResponse(res, error.message, 500);
   }
 };
 
@@ -217,34 +218,32 @@ const updateProductStock = async (req, res) => {
     const { adjustment } = req.body;
 
     if (adjustment === undefined) {
-      return res
-        .status(400)
-        .json({ error: 'Stock adjustment value is required' });
+      return errorResponse(res, 'Stock adjustment value is required', 400);
     }
 
     const product = await Product.findByPk(id);
 
     if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
+      return errorResponse(res, 'Product not found', 404);
     }
 
     // Tính toán giá trị stock mới
     const newStock = product.stock + parseInt(adjustment);
 
     if (newStock < 0) {
-      return res.status(400).json({ error: 'Insufficient stock available' });
+      return errorResponse(res, 'Insufficient stock available', 400);
     }
 
     await product.update({ stock: newStock });
 
-    res.json({
+    successResponse(res, {
       productId: product.id,
       previousStock: product.stock - parseInt(adjustment),
       currentStock: product.stock,
       adjustment: parseInt(adjustment),
     });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    errorResponse(res, error.message, 500);
   }
 };
 
