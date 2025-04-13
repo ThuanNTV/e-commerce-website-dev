@@ -55,25 +55,35 @@ app.use((err, req, res, next) => {
 // Database sync và khởi động server
 const startServer = async () => {
   try {
-    logger.info('⌛ Attempting database connection...');
-
-    await sequelize.authenticate();
-    logger.info('✅ Database connected successfully');
+    // Chờ MySQL sẵn sàng (quan trọng khi dùng Docker)
+    await waitForDatabase();
 
     logger.info('⌛ Syncing database models...');
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ force: process.env.NODE_ENV === 'development' }); // FORCE SYNC TRONG DEV
     logger.info('✅ Database synced successfully');
 
-    app.listen(process.env.PORT, () => {
-      logger.info(`🚀 Server running on port ${process.env.PORT}`);
-      logger.info(
-        `📚 API docs available at http://localhost:${process.env.PORT}/api-docs`,
-      );
+    app.listen(process.env.PORT || 3000, () => {
+      logger.info(`🚀 Server running on port ${process.env.PORT || 3000}`);
     });
   } catch (error) {
     logger.error(`🔥 Critical startup failure: ${error.stack}`);
     process.exit(1);
   }
+};
+
+// Hàm chờ kết nối database
+const waitForDatabase = async (retries = 5, delay = 5000) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await sequelize.authenticate();
+      logger.info('✅ Database connected successfully');
+      return;
+    } catch (err) {
+      logger.warn(`⌛ Retrying database connection (${i + 1}/${retries})...`);
+      await new Promise((res) => setTimeout(res, delay));
+    }
+  }
+  throw new Error('Unable to connect to database after multiple retries');
 };
 
 // Xử lý shutdown

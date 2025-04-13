@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const { successResponse, errorResponse } = require('../utils/response');
-const { sendPasswordResetEmail } = require('../services/email.service');
+// const { sendPasswordResetEmail } = require('../services/email.service');
 const { generateResetToken } = require('../utils/auth');
 
 const register = async (req, res) => {
@@ -123,7 +123,7 @@ const forgotPassword = async (req, res) => {
       user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
       await user.save();
 
-      await sendPasswordResetEmail(user.email, resetToken);
+      // await sendPasswordResetEmail(user.email, resetToken);
     }
 
     // Always return success to prevent email enumeration

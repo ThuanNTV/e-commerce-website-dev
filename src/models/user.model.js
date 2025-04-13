@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
+const { DataTypes } = require('sequelize');
 
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize) => {
   const User = sequelize.define(
     'User',
     {
@@ -57,6 +58,12 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
+      paranoid: true, // Thêm soft delete
+      timestamps: true, // Thêm dòng này
+      defaultScope: {
+        attributes: { exclude: ['password'] }, // Ẩn password mặc định
+      },
+      tableName: 'Users',
       indexes: [
         {
           unique: true,

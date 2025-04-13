@@ -33,6 +33,7 @@ services:
     ports:
       - '3000:3000'
     environment:
+      - PORT=${PORT}
       - NODE_ENV=development
       - DB_HOST=mysql
       - DB_PORT=3306
@@ -40,6 +41,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
       - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET} # Add this line
     depends_on:
       mysql:
         condition: service_healthy

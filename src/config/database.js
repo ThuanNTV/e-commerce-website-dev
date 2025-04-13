@@ -1,6 +1,5 @@
 const { Sequelize } = require('sequelize');
 
-// Khởi tạo sequelize instance
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
@@ -8,7 +7,11 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: 'mysql',
-    logging: false, // Tắt log SQL trong môi trường production
+    logging: console.log, // Bật logging để debug
+    define: {
+      timestamps: true, // Đảm bảo createdAt/updatedAt được tạo
+      freezeTableName: false, // Cho phép Sequelize tự động đặt tên bảng số nhiều
+    },
   },
 );
 

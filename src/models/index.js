@@ -1,35 +1,20 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const config = require('../config/config');
+// models/index.js
+const fs = require('fs');
+const path = require('path');
+const { Sequelize, DataTypes } = require('sequelize'); // Import DataTypes
+const sequelize = require('../config/database');
 
-const env = process.env.NODE_ENV || 'development';
-const dbConfig = config[env];
+const models = {};
+fs.readdirSync(__dirname)
+  .filter((file) => file.endsWith('.model.js'))
+  .forEach((file) => {
+    const model = require(path.join(__dirname, file))(sequelize, DataTypes); // Truyền cả DataTypes
+    models[model.name] = model;
+  });
 
-const sequelize = new Sequelize(
-  dbConfig.database,
-  dbConfig.username,
-  dbConfig.password,
-  {
-    host: dbConfig.host,
-    port: dbConfig.port,
-    dialect: dbConfig.dialect,
-    logging: dbConfig.logging,
-  },
-);
-
-const models = {
-  User: require('./user.model')(sequelize, DataTypes),
-  Product: require('./product.model')(sequelize, DataTypes),
-  Customer: require('./customer.model')(sequelize, DataTypes),
-  Order: require('./order.model')(sequelize, DataTypes),
-  OrderItem: require('./orderitem.model')(sequelize, DataTypes),
-};
-
+// Thiết lập associations
 Object.values(models).forEach((model) => {
   if (model.associate) model.associate(models);
 });
 
-module.exports = {
-  ...models,
-  sequelize,
-  Sequelize,
-};
+module.exports = { ...models, sequelize };

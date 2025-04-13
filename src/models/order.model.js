@@ -1,4 +1,6 @@
-module.exports = (sequelize, DataTypes) => {
+const { DataTypes } = require('sequelize');
+
+module.exports = (sequelize) => {
   const Order = sequelize.define('Order', {
     total: DataTypes.DECIMAL(10, 2),
     status: DataTypes.ENUM('pending', 'completed', 'cancelled'),
