@@ -1,4 +1,6 @@
 
 .env
+
 mysql/init/
+
 node_modules/
