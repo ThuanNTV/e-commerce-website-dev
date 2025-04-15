@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: thuanntv/e-commerce-website
+  IMAGE_NAME: thuannguyen721/e-commerce-website
 
 jobs:
   build-deploy:
