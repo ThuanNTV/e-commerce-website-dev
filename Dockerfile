@@ -38,4 +38,4 @@ HEALTHCHECK --interval=30s --timeout=5s \
   CMD wget --spider http://localhost:3000/healthz || exit 1
 
 # Use node directly instead of npm for better signal handling
-CMD ["node", "server.js"]
+CMD ["node", "app.js"]
