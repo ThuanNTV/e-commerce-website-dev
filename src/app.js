@@ -6,6 +6,8 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const sequelize = require('./config/database');
 const authRoutes = require('./routes/auth.routes');
 const productRoutes = require('./routes/product.routes');
+const settingsRoutes = require('./routes/settings.routes');
+
 const logger = require('./utils/logger'); // Import logger
 
 const app = express();
@@ -42,6 +44,7 @@ app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Xử lý lỗi toàn cục
 app.use((err, req, res, next) => {

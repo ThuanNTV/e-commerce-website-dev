@@ -18,7 +18,6 @@ const register = async (req, res) => {
     const user = await User.create({
       email,
       password,
-      role: 'customer', // Force default role
     });
 
     // Omit sensitive fields
