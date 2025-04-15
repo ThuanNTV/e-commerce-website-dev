@@ -1,14 +1,14 @@
 // models/index.js
 const fs = require('fs');
 const path = require('path');
-const { Sequelize, DataTypes } = require('sequelize'); // Import DataTypes
-const sequelize = require('../config/database');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize'); // Changed from database to sequelize
 
 const models = {};
 fs.readdirSync(__dirname)
   .filter((file) => file.endsWith('.model.js'))
   .forEach((file) => {
-    const model = require(path.join(__dirname, file))(sequelize, DataTypes); // Truyền cả DataTypes
+    const model = require(path.join(__dirname, file))(sequelize, DataTypes);
     models[model.name] = model;
   });
 
