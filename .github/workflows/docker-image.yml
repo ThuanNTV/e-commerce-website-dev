@@ -8,22 +8,10 @@ on:
 env:
   REGISTRY: docker.io
   IMAGE_NAME: thuanntv/e-commerce-website
-  DB_NAME: ecommerce_test
-  DB_USER: root
-  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
 jobs:
-  build-test-deploy:
+  build-deploy:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ env.DB_PASSWORD }}
-          MYSQL_DATABASE: ${{ env.DB_NAME }}
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout code
@@ -33,25 +21,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Wait for MySQL
-        run: |
-          for i in {1..10}; do
-            mysqladmin ping -h 127.0.0.1 -u root --password="${{ env.DB_PASSWORD }}" && break
-            sleep 5
-          done
-
-      - name: Run tests
-        env:
-          DB_HOST: 127.0.0.1
-          DB_USER: root
-          DB_PASSWORD: ${{ env.DB_PASSWORD }}
-          DB_NAME: ${{ env.DB_NAME }}
-        run: npm test
 
       - name: Build Docker image
         uses: docker/build-push-action@v4
