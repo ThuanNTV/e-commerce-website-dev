@@ -1,41 +1,42 @@
-# Stage 1: Build and install dependencies
+# Stage 1: Builder stage - Dùng để cài đặt dependencies và build
 FROM node:18-alpine AS builder
+
+# Cài đặt các package cần thiết cho native modules
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++
 
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy package files trước để tận dụng Docker cache
 COPY package*.json ./
-RUN npm ci --prefer-offline --no-audit --quiet
 
-# Copy source code
+# Cài đặt dependencies với chế độ production
+RUN npm ci --only=production
+
+# Copy toàn bộ source code
 COPY . .
 
-# Add build step here if needed (e.g., for React/TypeScript)
-# RUN npm run build
-
-# Stage 2: Production image
+# Stage 2: Production stage - Image cuối cùng
 FROM node:18-alpine
 
-# Create non-root user
+# Tạo non-root user
 RUN addgroup -g 1001 appgroup && \
     adduser -u 1001 -G appgroup -D appuser
 
 WORKDIR /app
 
-# Copy from builder with proper ownership
+# Copy từ builder stage
 COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
-COPY --from=builder --chown=appuser:appgroup /app/ ./
+COPY --from=builder --chown=appuser:appgroup /app/ .
 
-# Environment configuration
+# Thiết lập environment variables
 ENV NODE_ENV=production
 EXPOSE 3000
 
-# Switch to non-root user
+# Chuyển sang non-root user
 USER appuser
 
-# Health check (recommended addition)
-HEALTHCHECK --interval=30s --timeout=5s \
-  CMD wget --spider http://localhost:3000/healthz || exit 1
-
-# Use node directly instead of npm for better signal handling
+# Sử dụng node trực tiếp thay vì npm để chạy
 CMD ["node", "app.js"]
