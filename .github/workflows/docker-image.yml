@@ -45,42 +45,12 @@ jobs:
             sleep 5
           done
 
-      - name: Create database
-        env:
-          DB_HOST: 127.0.0.1
-          DB_USER: root
-          DB_PASSWORD: ${{ env.DB_PASSWORD }}
-        run: |
-          npx sequelize-cli db:create --env test
-
-      - name: Run migrations
-        env:
-          DB_HOST: 127.0.0.1
-          DB_USER: root
-          DB_PASSWORD: ${{ env.DB_PASSWORD }}
-          NODE_ENV: test
-        run: |
-          npx sequelize-cli db:migrate
-
-      - name: Run seeders (conditional)
-        env:
-          DB_HOST: 127.0.0.1
-          DB_USER: root
-          DB_PASSWORD: ${{ env.DB_PASSWORD }}
-          NODE_ENV: test
-        run: |
-          if [ -d "src/seeders" ] && [ -n "$(ls -A src/seeders/*.js 2>/dev/null)" ]; then
-            npx sequelize-cli db:seed:all
-          else
-            echo "No seeders found, skipping..."
-          fi
-
       - name: Run tests
         env:
           DB_HOST: 127.0.0.1
           DB_USER: root
           DB_PASSWORD: ${{ env.DB_PASSWORD }}
-          NODE_ENV: test
+          DB_NAME: ${{ env.DB_NAME }}
         run: npm test
 
       - name: Build Docker image
