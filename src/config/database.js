@@ -1,18 +1,28 @@
-const { Sequelize } = require('sequelize');
+require('dotenv').config();
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  {
+module.exports = {
+  test: {
+    username: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME || 'ecommerce_test',
+    host: process.env.DB_HOST || 'localhost',
+    dialect: 'mysql', // <-- Phải là string
+    logging: false,
+  },
+  development: {
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     dialect: 'mysql',
-    logging: console.log, // Bật logging để debug
-    define: {
-      timestamps: true, // Đảm bảo createdAt/updatedAt được tạo
-      freezeTableName: false, // Cho phép Sequelize tự động đặt tên bảng số nhiều
-    },
+    logging: console.log,
   },
-);
-
-module.exports = sequelize;
+  production: {
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    dialect: 'mysql',
+    logging: false,
+  },
+};
