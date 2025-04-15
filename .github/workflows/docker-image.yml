@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: thuanntv/e-commerce-website
+  IMAGE_NAME: thuanntv/e-commerce-website # Must match Docker Hub repo
 
 jobs:
   build-deploy:
@@ -25,12 +25,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Docker image
+      - name: Build Docker image (Test)
         uses: docker/build-push-action@v4
         with:
           context: .
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          push: false # Build only
+          push: false # Don't push here
 
       - name: Security scan
         uses: aquasecurity/trivy-action@master
@@ -45,8 +45,8 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }} # ✅ Fixed secret name
-          password: ${{ secrets.DOCKERHUB_TOKEN }} # ✅ Fixed secret name
+          username: ${{ secrets.DOCKERHUB_USERNAME }} # Ensure names match GitHub Secrets
+          password: ${{ secrets.DOCKERHUB_TOKEN }} # Ensure this is a token with WRITE access
 
       - name: Push to Docker Hub
         if: github.ref == 'refs/heads/main'
