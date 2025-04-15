@@ -22,10 +22,12 @@ jobs:
         with:
           node-version: 18
 
-      - name: Update vulnerabilities
+      # Cập nhật package.json trực tiếp
+      - name: Fix vulnerabilities
         run: |
           if grep -q "cross-spawn" package.json; then
-            npm install cross-spawn@7.0.5 --save
+            sed -i 's/"cross-spawn": "^7.0.3"/"cross-spawn": "^7.0.5"/g' package.json
+            npm install
           fi
 
       - name: Install dependencies
@@ -36,6 +38,8 @@ jobs:
         with:
           context: .
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          build-args: |
+            NODE_ENV=production
 
       - name: Security scan
         uses: aquasecurity/trivy-action@master
